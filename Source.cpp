@@ -5,6 +5,7 @@
 #include <conio.h>
 
 
+
 class Vector {
 public:
 	Vector();
@@ -94,6 +95,65 @@ void Vector::DebugPrint() {
 
 }
 
+
+class LinkedList {
+public:
+	LinkedList(int dat);
+	~LinkedList();
+	int data;
+	LinkedList* next;
+	void add(int dat);
+	void print();
+};
+
+LinkedList::~LinkedList() {
+	LinkedList* current = this;
+	if (next != NULL) {
+		next->~LinkedList();
+	}
+	free(next);
+}
+
+void LinkedList::print() {
+	LinkedList* current = this;
+	while (true)
+	{
+		if (current->next == NULL) {
+			printf("%d\n", current->data);
+			break;
+		}
+		else {
+			printf("%d\n", current->data);
+			current = current->next;
+		}
+	}
+}
+
+LinkedList::LinkedList(int dat) {
+	data = dat;
+	next = NULL;
+}
+
+void LinkedList::add(int dat) {
+	LinkedList* current = this;
+	while (true)
+	{
+		if (current->next == NULL) {
+			LinkedList* newLl;
+			newLl = (LinkedList*)(malloc(16));
+			newLl->data = dat;
+			newLl->next = NULL;
+			current->next = newLl;
+			break;
+		}
+		else {
+			current = current->next;
+		}
+	}
+}
+
+
+
 void memory_leak() {
 	for (int i = 0;i < 1000000;i++) {
 		Vector vec;
@@ -114,10 +174,29 @@ void steps() {
 	nums.Print();
 }
 
+void manually_alloc() {
+	Vector* vec2 = new Vector();
+	vec2->Append(100);
+	vec2->Print();
+	delete vec2;
+}
+
+
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//memory_leak();
 
+	LinkedList test(10);
+	for (int i = 0;i < 15;i++) {
+		test.add(i);
+	}
+	test.print();
+	test.~LinkedList();
+	_getch();
+	return 0;
+
+
+	//memory_leak();
+	manually_alloc();
 	printf("Hello World!\n");
 	steps();
 	_getch();
