@@ -103,15 +103,47 @@ public:
 	int data;
 	LinkedList* next;
 	void add(int dat);
+	void del(int dat);
 	void print();
 };
 
-LinkedList::~LinkedList() {
+void LinkedList::del(int dat) {
 	LinkedList* current = this;
-	if (next != NULL) {
-		next->~LinkedList();
+	LinkedList* previous = nullptr;
+
+	while (current != nullptr) {
+		if (current->data == dat) {
+			if (previous != nullptr) {
+				previous->next = current->next;
+			}
+			else {
+				if (current->next != nullptr) {
+					LinkedList* temp = current->next;
+					this->data = temp->data;
+					this->next = temp->next;
+					delete temp;
+					return;
+				}
+				else {
+					this->data = 0;
+					this->next = nullptr;
+					return;
+				}
+			}
+			current->next = NULL;
+			delete current;
+			break;
+		}
+		else {
+			previous = current;
+			current = current->next;
+		}
 	}
-	free(next);
+}
+
+
+LinkedList::~LinkedList() {
+	delete next;	
 }
 
 void LinkedList::print() {
@@ -139,10 +171,7 @@ void LinkedList::add(int dat) {
 	while (true)
 	{
 		if (current->next == NULL) {
-			LinkedList* newLl;
-			newLl = (LinkedList*)(malloc(16));
-			newLl->data = dat;
-			newLl->next = NULL;
+			LinkedList* newLl = new LinkedList(dat);
 			current->next = newLl;
 			break;
 		}
@@ -185,12 +214,16 @@ void manually_alloc() {
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	LinkedList test(10);
+	LinkedList* test = new LinkedList(10);
 	for (int i = 0;i < 15;i++) {
-		test.add(i);
+		test->add(i);
 	}
-	test.print();
-	test.~LinkedList();
+	test->del(2);
+	test->del(3);
+	test->del(4);
+
+	test->print();
+	delete test;
 	_getch();
 	return 0;
 
