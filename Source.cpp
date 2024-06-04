@@ -4,7 +4,7 @@
 #include <crtdbg.h>
 #include <conio.h>
 
-
+int bintree();
 
 class Vector {
 public:
@@ -102,9 +102,13 @@ public:
 	~LinkedList();
 	int data;
 	LinkedList* next;
+	LinkedList* prev;
 	void add(int dat);
 	void del(int dat);
 	void print();
+	void r_print();
+	void insert(int dat);
+	bool isSorted();
 };
 
 void LinkedList::del(int dat) {
@@ -115,6 +119,7 @@ void LinkedList::del(int dat) {
 		if (current->data == dat) {
 			if (previous != nullptr) {
 				previous->next = current->next;
+				current->next->prev = previous;
 			}
 			else {
 				if (current->next != nullptr) {
@@ -127,6 +132,7 @@ void LinkedList::del(int dat) {
 				else {
 					this->data = 0;
 					this->next = nullptr;
+					this->prev = nullptr;
 					return;
 				}
 			}
@@ -140,7 +146,6 @@ void LinkedList::del(int dat) {
 		}
 	}
 }
-
 
 LinkedList::~LinkedList() {
 	delete next;	
@@ -161,9 +166,54 @@ void LinkedList::print() {
 	}
 }
 
+void LinkedList::r_print() {
+	LinkedList* current = this;
+	while (true)
+	{
+		if (current->next == NULL) {
+			break;
+		}
+		else {
+			current = current->next;
+		}
+	}
+
+	while (true) 
+	{
+		if (current->prev == NULL) {
+			printf("%d\n", current->data);
+			break;
+		}
+		else {
+			printf("%d\n", current->data);
+			current = current->prev;
+		}
+	}
+}
+
+bool LinkedList::isSorted() {
+	LinkedList* current = this;
+	int bigEqual = data;
+	while (true)
+	{
+		if (current->next == NULL) {
+			printf("%d\n", current->data);
+			break;
+		}
+		else {
+			if (current->data > current->next->data) {
+				return false;
+			}
+		}
+		current = current->next;
+	}
+	return true;
+}
+
 LinkedList::LinkedList(int dat) {
 	data = dat;
 	next = NULL;
+	LinkedList* prev = NULL;
 }
 
 void LinkedList::add(int dat) {
@@ -172,7 +222,9 @@ void LinkedList::add(int dat) {
 	{
 		if (current->next == NULL) {
 			LinkedList* newLl = new LinkedList(dat);
+			newLl->prev = current;
 			current->next = newLl;
+
 			break;
 		}
 		else {
@@ -181,7 +233,43 @@ void LinkedList::add(int dat) {
 	}
 }
 
+void LinkedList::insert(int dat) {
+	LinkedList* current = this;
 
+	if (dat < current->data) {
+		LinkedList* temp1 = new LinkedList(dat);
+		LinkedList* temp2 = new LinkedList(dat);
+
+		temp1->next = current->next;
+		temp1->data = current->data;
+		temp1->prev = current;
+		current = temp2;
+		next = temp1;
+		prev = NULL;
+		data = dat;
+		delete temp2;
+		return;
+	}
+
+	while (true) {
+		if (current->next == NULL) {
+			LinkedList* newLl = new LinkedList(dat);
+			newLl->prev = current;
+			current->next = newLl;
+			return;
+		}
+		else {
+			if (dat >= current->data && dat <= current->next->data) {
+				LinkedList* newLl = new LinkedList(dat);
+				newLl->prev = current;
+				newLl->next = current->next;
+				current->next = newLl;
+				return;
+			}
+		}
+		current = current->next;
+	}
+}
 
 void memory_leak() {
 	for (int i = 0;i < 1000000;i++) {
@@ -211,26 +299,35 @@ void manually_alloc() {
 }
 
 
-int main() {
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
-	LinkedList* test = new LinkedList(10);
-	for (int i = 0;i < 15;i++) {
-		test->add(i);
+void linkedlist() {
+	LinkedList* test = new LinkedList(1);
+	for (int i = 0; i < 15; i++) {
+		test->insert(i);
 	}
 	test->del(2);
 	test->del(3);
 	test->del(4);
-
 	test->print();
+	test->insert(3);
+	test->insert(20);
+	//test->insert(-1);
+	test->print();
+	printf("=========\n");
+	test->r_print();
+	test->add(1);
+	bool res = test->isSorted();
 	delete test;
+
+}
+
+
+int main() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	//linkedlist();
+	bintree();
+
+
 	_getch();
 	return 0;
-
-
-	//memory_leak();
-	manually_alloc();
-	printf("Hello World!\n");
-	steps();
-	_getch();
 }
