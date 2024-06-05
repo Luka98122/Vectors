@@ -163,6 +163,71 @@ void fprint_tree(BinaryTree* root,int depth) {
 };
 
 
+class String {
+public:
+	String(const char* st);
+	~String();
+	char* data;
+	int len;
+
+	void print();
+	void debugPrint();
+	String* operator + (String &obj);
+};
+
+String::String(const char* st) {
+	int l = 0;
+	while (true) {
+		if (st[l] == '\0') {
+			break;
+		}
+		else {
+			l += 1;
+		}
+	}
+	len = l;
+	char* dat = (char*)(malloc(sizeof(char) * (len + 1)));
+	for (int i = 0; i < len; i++) {
+		dat[i] = st[i];
+	}
+	dat[len] = '\0';
+	data = dat;
+	printf("Constructor: ");
+	debugPrint();
+
+}
+
+String::~String() {
+	printf("Destructor ");
+	debugPrint();
+	free(data);
+}
+
+String* String::operator+(String &obj) {
+	int newLen = len + obj.len;
+	char* temp = (char*)(malloc((newLen + 1) * sizeof(char))); 
+	for (int i = 0; i < len; i++) {
+		temp[i] = data[i];
+	}
+	for (int i = 0; i < obj.len; i++) {
+		temp[len + i] = obj.data[i];
+	}
+	temp[newLen] = '\0'; 
+
+	String* res = new String(temp);
+	obj.data = NULL;
+	free(temp);
+	return res;
+}
+
+void String::print() {
+	printf("%s", data);
+}
+
+void String::debugPrint() {
+	printf("ptr: %p len: %d data-ptr: %p Str: %s\n", this, len, data,(data?data:""));
+}
+
 int bintree() {
 	BinaryTree* bt = new BinaryTree(100);
 
@@ -180,5 +245,22 @@ int bintree() {
 	BinaryTree* testing = first_parent(bt->left->left->left, bt->left->right->left);
 
 	delete bt;
+	return 0;
+}
+
+int string() {
+
+	String* str = new String("Hello ");
+	String* str2 = new String("World\n");
+	String* str3 = *str + *str2;
+	printf("str3: %s\n str: ", str3->data);
+	str->print();
+	printf("\n str3: ");
+	str3->print();
+	printf("\n");
+	printf("Stringy\n");
+	delete str;
+	delete str2;
+	delete str3;
 	return 0;
 }

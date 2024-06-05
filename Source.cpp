@@ -5,6 +5,8 @@
 #include <conio.h>
 
 int bintree();
+int string();
+
 
 class Vector {
 public:
@@ -325,8 +327,8 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	//linkedlist();
-	bintree();
-
+	//bintree();
+	string();
 
 	_getch();
 	return 0;
