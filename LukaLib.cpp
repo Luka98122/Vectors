@@ -481,6 +481,15 @@ int String::operator==(String& other) {
 	return 0;
 }
 
+bool String::has(char* other) {
+	for (int i = 0; i < len; i++) {
+		if (this->data[i] == other[0]) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 StringVector::StringVector () {
 	size = 16;
@@ -566,4 +575,19 @@ int StringVector::operator==(StringVector& other) {
 
 	}
 	return 0;
+}
+
+
+Node::Node() {
+
+}
+
+Node::~Node(){
+
+}
+
+
+
+void assignNeighbors(Node* node, StringVector* edges) {
+
 }

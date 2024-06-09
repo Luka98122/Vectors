@@ -22,10 +22,29 @@ void int_binary(int n) {
     printf("\n");
 }
 
+int rotate_left(int n, int c) {
+    n = (n << c) | (n >> 64-c);
+    return n;
+}
+
+int rotate_right(int n, int c) {
+    n = (n >> c) | (n << 64-c);
+    return n;
+}
+
+
 
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	
+    
+
+
+
+
+    //int_binary(7);
+    //int_binary(rotate_left(7,3));
+    //int_binary(rotate_right(7,2));
+
     tester();
 
 

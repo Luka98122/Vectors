@@ -24,6 +24,7 @@ public:
 
 	void print();
 	void debugPrint();
+	bool has(char* other);
 	int operator== (String& other);
 	String* operator + (String& obj);
 };
@@ -72,3 +73,12 @@ public:
 	bool isSorted();
 };
 
+class Node {
+public:
+	Node();
+	~Node();
+	int id;
+	int data;
+	int bestToReach;
+	Node** neighbors;
+};
