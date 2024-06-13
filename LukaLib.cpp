@@ -6,6 +6,33 @@
 
 
 
+void int_binary(int n) {
+	int k;
+	for (int c = 31; c >= 0; c--)
+	{
+		k = n >> c;
+		if (k & 1)
+			printf("1");
+		else
+			printf("0");
+	}
+
+	printf("\n");
+}
+
+int rotate_left(int n, int c) {
+	n = (n << c) | (n >> 64 - c);
+	return n;
+}
+
+int rotate_right(int n, int c) {
+	n = (n >> c) | (n << 64 - c);
+	return n;
+}
+
+
+
+
 Vector::Vector() {
 	size = 16;
 	occupied = 0;
@@ -69,7 +96,7 @@ void Vector::Remove(int x) {
 	}
 	printf("Value was not found!\n");
 }
-
+ 
 void Vector::DebugPrint() {
 	printf("Vector {");
 	printf("%p ", this);
@@ -481,15 +508,53 @@ int String::operator==(String& other) {
 	return 0;
 }
 
-bool String::has(char* other) {
-	for (int i = 0; i < len; i++) {
-		if (this->data[i] == other[0]) {
-			return true;
+Vec<String> String::split(String splitter) {
+	Vec<String> result;
+	int startPos = 0;
+	int splitterLen = splitter.len;
+	int pos = 0;
+	while ((pos = has(splitter.data, startPos)) != -1) {
+		char* substr = (char*)malloc((pos - startPos + 1) * sizeof(char));
+		for (int i = startPos; i < pos; i++) {
+			substr[i - startPos] = data[i];
 		}
+		substr[pos - startPos] = '\0';
+		String *newString = new String(substr);
+		result.Append(newString);
+		free(substr);
+		startPos = pos + splitterLen;
 	}
-	return false;
+	if (startPos < len) {
+		char* substr = (char*)malloc((len - startPos + 1) * sizeof(char));
+		for (int i = startPos; i < len; i++) {
+			substr[i - startPos] = data[i];
+		}
+		substr[len - startPos] = '\0';
+		String *newString = new String(substr);
+		result.Append(newString);
+		free(substr);
+	}
+	return result;
 }
 
+int String::has(const char* other, int start) {
+	int otherLen = 0;
+	while (other[otherLen] != '\0') {
+		otherLen++;
+	}
+	for (int i = start; i <= len - otherLen; i++) {
+		int j;
+		for (j = 0; j < otherLen; j++) {
+			if (data[i + j] != other[j]) {
+				break;
+			}
+		}
+		if (j == otherLen) {
+			return i;
+		}
+	}
+	return -1;
+}	
 
 StringVector::StringVector () {
 	size = 16;
@@ -578,16 +643,50 @@ int StringVector::operator==(StringVector& other) {
 }
 
 
-Node::Node() {
 
+int hash(int inp) {
+	int out = rotate_left(inp, 13) ^ (inp * 17);
+	return out;
 }
 
-Node::~Node(){
-
+int hash_string(String* obj) {
+	int val = 0;
+	for (int i = 0; i < obj->len; i++) {
+		val += obj->data[i];
+	}
+	return hash(val);
 }
 
 
+HashMap::HashMap() {
+	maxSize = 128;
+	elements = (String*)(malloc(sizeof(String)*maxSize));
+	occupieds = (int*)(malloc(sizeof(int) * maxSize));
+	for (int i = 0; i < maxSize; i++) {
+		occupieds[i] = 0;
+	}
+}
 
-void assignNeighbors(Node* node, StringVector* edges) {
 
+void HashMap::Append(String* key, String* val) {
+	int realKey = hash_string(key) % maxSize;
+	String* copy = new String(val->data);
+	if (occupieds[realKey] == 0) {
+		elements[realKey] = *copy;
+		occupieds[realKey] = 1;
+	}
+	else {
+		printf("Failed to add string! Slot allready occupied ( Hash collision )!\n");
+	}
+};
+
+String HashMap::Get(String* key) {
+	int realKey = hash_string(key) % maxSize;
+	if (occupieds[realKey] == 1) {
+		return elements[realKey];
+	}
+	else {
+		printf("Key not found! Key: %s", key->data);
+		return NULL;
+	}
 }
