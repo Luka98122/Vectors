@@ -446,12 +446,19 @@ String::String() {
 }
 
 String::String(const String& other) {
-	printf("Copy constructor String &p -> &p\n", &other, this);
+	printf("String copy constructor %p -> %p\n", &other, this);
+
+	*this = other;
+}
+
+void String::operator=(const String& other) {
+	printf("String operator= %p -> %p\n", &other, this);
 	len = other.len;
 	data = new char[len + 1];
 	for (int i = 0; i < len + 1; i++) {
 		data[i] = other.data[i];
 	}
+
 }
 
 
@@ -480,7 +487,7 @@ String::String(const char* st) {
 
 String::~String() {
 	printf("~String @ %p - %s\n", this, data);
-	delete data;
+	delete []data;
 }
 
 String* String::operator+(String& other) {
@@ -495,7 +502,7 @@ String* String::operator+(String& other) {
 	temp[newLen] = '\0';
 
 	String* res = new String(temp);
-	delete temp;
+	delete []temp;
 	return res;
 }
 
@@ -534,8 +541,8 @@ Vec<String>* String::split(String* splitter) {
 		}
 		substr[pos - startPos] = '\0';
 		String *newString = new String(substr);
-		result->Append(newString);
-		delete substr;
+		result->Append(*newString);
+		delete []substr;
 		startPos = pos + splitterLen;
 	}
 	if (startPos < len) {
@@ -545,7 +552,7 @@ Vec<String>* String::split(String* splitter) {
 		}
 		substr[len - startPos] = '\0';
 		String *newString = new String(substr);
-		result->Append(newString);
+		result->Append(*newString);
 		free(substr);
 	}
 	return result;
@@ -680,8 +687,8 @@ HashSpot::HashSpot() {
 
 HashSpot::~HashSpot() {
 	printf("~HashSpot @ %p\n", this);
-	delete keys;
-	delete values;
+	delete []keys;
+	delete []values;
 }
 
 String* HashSpot::Get(String* key) {
@@ -729,8 +736,8 @@ void HashMap::Set(String* key, String* val) {
 
 
 	HashSpot* spot = new HashSpot();
-	spot->keys->Append(copy2);
-	spot->values->Append(copy);
+	spot->keys->Append(*copy2);
+	spot->values->Append(*copy);
 
 	if (occupieds[realKey] == 0) {
 		elements[realKey] = *spot;

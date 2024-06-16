@@ -12,7 +12,7 @@ public:
 	T* elements;
 	int size;
 	int occupied;
-	void Append(T* x);
+	void Append(const T& x);
 };
 
 class String {
@@ -27,6 +27,7 @@ public:
 	void print();
 	void debugPrint();
 	int has(const char* other, int start);
+	void operator=(const String& other);
 	int operator== (String& other);
 	String* operator + (String& obj);
 	Vec<String>* split(String* splitter);
@@ -44,16 +45,15 @@ Vec<T>::Vec<T>() {
 template <class T>
 Vec<T>::~Vec<T>() {
 	printf("~Vec<T> @ %p\n", this);
-	delete elements;
+	delete []elements;
 }
 
-
 template <class T>
-void Vec<T>::Append(T* x) {
+void Vec<T>::Append(const T& x) {
 
 
 	if (occupied < size) {
-		elements[occupied] = *x;
+		elements[occupied] = x;
 		occupied += 1;
 	}
 	else {
@@ -64,7 +64,7 @@ void Vec<T>::Append(T* x) {
 		}
 		delete elements;
 		elements = temp;
-		elements[occupied] = *x;
+		elements[occupied] = x;
 	}
 }
 

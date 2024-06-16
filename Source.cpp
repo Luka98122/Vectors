@@ -75,16 +75,22 @@ int names_age() {
 
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    String* str1 = new String("He.l.lo");
-//    String* str2 = new String(" World\n");
+   String* str1 = new String("He.l.lo");
+   String* str2 = new String(" World\n");
+   String* str3 = new String(*str2);
+   String str4(*str3);
+   str4.print();
+   str3->print();
 
     Vec<String>* tmp = new Vec<String>;
-    tmp->Append(str1);
- //   tmp->Append(str2);
+ 
+    tmp->Append(*str1);
+    tmp->Append(*str2);
 
     delete tmp;
     delete str1;
- //   delete str2;
+    delete str2;
+    delete str3;
 
 
     return 0;
