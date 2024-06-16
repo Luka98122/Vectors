@@ -439,6 +439,20 @@ void fprint_tree(BinaryTree* root, int depth) {
 };
 
 
+String::String() {
+	data = NULL;
+	len = 0;
+	printf("Empty String @ %p\n", this);
+}
+
+String::String(const String& other) {
+	printf("Copy constructor String &p -> &p\n", &other, this);
+	len = other.len;
+	data = new char[len + 1];
+	for (int i = 0; i < len + 1; i++) {
+		data[i] = other.data[i];
+	}
+}
 
 
 String::String(const char* st) {
@@ -452,26 +466,26 @@ String::String(const char* st) {
 		}
 	}
 	len = l;
-	char* dat = (char*)(malloc(sizeof(char) * (len + 1)));
+	char* dat = new char[len+1];
 	for (int i = 0; i < len; i++) {
 		dat[i] = st[i];
 	}
-	dat[len] = '\0';
+	dat[len] = 0;
 	data = dat;
+	printf("String @ %p - %s\n", this, data);
 	//printf("Constructor: ");
 	//debugPrint();
 
 }
 
 String::~String() {
-	//printf("Destructor ");
-	//debugPrint();
-	free(data);
+	printf("~String @ %p - %s\n", this, data);
+	delete data;
 }
 
 String* String::operator+(String& other) {
 	int newLen = len + other.len;
-	char* temp = (char*)(malloc((newLen + 1) * sizeof(char)));
+	char* temp = new char[newLen + 1];
 	for (int i = 0; i < len; i++) {
 		temp[i] = data[i];
 	}
@@ -481,7 +495,7 @@ String* String::operator+(String& other) {
 	temp[newLen] = '\0';
 
 	String* res = new String(temp);
-	free(temp);
+	delete temp;
 	return res;
 }
 
@@ -508,30 +522,30 @@ int String::operator==(String& other) {
 	return 0;
 }
 
-Vec<String> String::split(String splitter) {
-	Vec<String> result;
+Vec<String>* String::split(String* splitter) {
+	Vec<String>* result = new Vec<String>;
 	int startPos = 0;
-	int splitterLen = splitter.len;
+	int splitterLen = splitter->len;
 	int pos = 0;
-	while ((pos = has(splitter.data, startPos)) != -1) {
-		char* substr = (char*)malloc((pos - startPos + 1) * sizeof(char));
+	while ((pos = has(splitter->data, startPos)) != -1) {
+		char* substr = new char [pos - startPos + 1];
 		for (int i = startPos; i < pos; i++) {
 			substr[i - startPos] = data[i];
 		}
 		substr[pos - startPos] = '\0';
 		String *newString = new String(substr);
-		result.Append(newString);
-		free(substr);
+		result->Append(newString);
+		delete substr;
 		startPos = pos + splitterLen;
 	}
 	if (startPos < len) {
-		char* substr = (char*)malloc((len - startPos + 1) * sizeof(char));
+		char* substr = new char[len - startPos + 1];
 		for (int i = startPos; i < len; i++) {
 			substr[i - startPos] = data[i];
 		}
 		substr[len - startPos] = '\0';
 		String *newString = new String(substr);
-		result.Append(newString);
+		result->Append(newString);
 		free(substr);
 	}
 	return result;
@@ -658,32 +672,84 @@ int hash_string(String* obj) {
 }
 
 
+HashSpot::HashSpot() {
+	printf("HashSpot @ %p\n", this);
+	keys = new Vec<String>;
+	values = new Vec<String>;
+}
+
+HashSpot::~HashSpot() {
+	printf("~HashSpot @ %p\n", this);
+	delete keys;
+	delete values;
+}
+
+String* HashSpot::Get(String* key) {
+	int res = 0;
+	for (int i = 0; i < keys->size; i++) {
+		if ((*key == keys->elements[i])==0) {
+			res = i;
+			break;
+		}
+	}
+
+	
+	return &values->elements[res];
+}
+
+
 HashMap::HashMap() {
 	maxSize = 128;
-	elements = (String*)(malloc(sizeof(String)*maxSize));
-	occupieds = (int*)(malloc(sizeof(int) * maxSize));
+	elements = new HashSpot[maxSize];
+	occupieds = new int[maxSize];
 	for (int i = 0; i < maxSize; i++) {
 		occupieds[i] = 0;
 	}
 }
 
+HashMap::~HashMap() {
+	
+	for (int i = 0; i < maxSize; i++) {
+		if (occupieds[i] == 1) {
+			//for (int j = 0; j < elements[i]->values->occupied;j++) {
+				//delete &elements[i]->values[j];
+				//delete &elements[i]->keys[j];
+			//}
+			delete &elements[i];
+		}
+	}
+	free(occupieds);
+	free(elements);
+}
 
-void HashMap::Append(String* key, String* val) {
+void HashMap::Set(String* key, String* val) {
 	int realKey = hash_string(key) % maxSize;
 	String* copy = new String(val->data);
+	String* copy2 = new String(key->data);
+
+
+	HashSpot* spot = new HashSpot();
+	spot->keys->Append(copy2);
+	spot->values->Append(copy);
+
 	if (occupieds[realKey] == 0) {
-		elements[realKey] = *copy;
+		elements[realKey] = *spot;
 		occupieds[realKey] = 1;
 	}
 	else {
+		delete spot;
+		delete copy;
+		delete copy2;
 		printf("Failed to add string! Slot allready occupied ( Hash collision )!\n");
 	}
+
 };
 
-String HashMap::Get(String* key) {
+String* HashMap::Get(String* key) {
 	int realKey = hash_string(key) % maxSize;
 	if (occupieds[realKey] == 1) {
-		return elements[realKey];
+		String* newStr = new String(elements[realKey].Get(key)->data);
+		return newStr;
 	}
 	else {
 		printf("Key not found! Key: %s", key->data);

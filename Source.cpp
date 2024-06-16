@@ -75,43 +75,47 @@ int names_age() {
 
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-    int tmp = 177;
-    printf("%s", tmp);
+    String* str1 = new String("He.l.lo");
+//    String* str2 = new String(" World\n");
 
-    String* str1 = new String("Hello");
-    String* str2 = new String(" World\n");
+    Vec<String>* tmp = new Vec<String>;
+    tmp->Append(str1);
+ //   tmp->Append(str2);
 
-    HashMap* dict1 = new HashMap();
-    dict1->Append(str1, str2);
-    dict1->Append(str2, str1);
-
-    dict1->Append(str2, str1);
-
-    String world = dict1->Get(str1);
-    printf("%s", world.data);
-
-    Vec<String> newVec;
-    newVec = str1->split(".");
+    delete tmp;
+    delete str1;
+ //   delete str2;
 
 
+    return 0;
+    /*
+   // HashMap* dict1 = new HashMap();
+ //   dict1->Set(str1, str2);
+    //->Set(str2, str1);
+
+    //dict1->Set(str2, str1);
 
 
 
 
-    //int_binary(7);
-    //int_binary(rotate_left(7,3));
-    //int_binary(rotate_right(7,2));
+    //String* world = dict1->Get(str1);
+    //printf("%s", world->data);
 
-     tester();
+    
+    //String* tmp = new String(".");
+
+    //Vec<String>* newVec;
+    //newVec = str1->split(tmp);
+    //delete tmp;
+    delete dict1;
+    delete str1;
+    delete str2;
+    //delete world;
+    //delete newVec;
+    return 0;
 
 
-	unsigned char a = 5, b = 9;
 
-	printf("And: ");
-    int_binary(a & b);
-	printf("\nOr : ");
-    int_binary(a | b);
-    printf("\nXor : ");
-    int_binary(a ^ b);
-	return 0;
+    //tester();
+    */
 }
